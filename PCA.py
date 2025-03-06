@@ -4,7 +4,6 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -57,4 +56,34 @@ for i, ax in enumerate(axes.flat):
     ax.set_title(f'PC{i+1} vs. Compressive Strength')
 
 plt.tight_layout()
+plt.show()
+
+
+""" 2D projection onto principal components"""
+PC_x = 3
+PC_y = 5
+PC_z = 6
+
+X_2d = input_pca[:, :PC_y]  # Select the first x principal components
+color_dimension = df["Concrete compressive strength(MPa, megapascals) "] # Use concrete strength for color coding
+#color_dimension = input_pca[:, 2] # Use the third principal component for color coding
+
+plt.scatter(X_2d[:, PC_x-1], X_2d[:, PC_y-1], c=color_dimension, cmap='coolwarm', alpha=0.7)
+plt.xlabel(f'Principal Component {PC_x}')
+plt.ylabel(f'Principal Component {PC_y}')
+plt.title(f'2D Projection of Data onto PC{PC_x} and PC{PC_y}')
+plt.show()
+
+""" 3D projection onto principal components """
+# Project onto the first 3 components
+X_3d = input_pca[:, :PC_z]
+
+# Plot in 3D
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(X_3d[:, PC_x-1], X_3d[:, PC_y-1], X_3d[:, PC_z-1],c=color_dimension, cmap='coolwarm', alpha=0.7)
+ax.set_xlabel(f'Principal Component {PC_x}')
+ax.set_ylabel(f'Principal Component {PC_y}')
+ax.set_zlabel(f'Principal Component {PC_z}')
+plt.title(f'3D Projection of Data onto PC{PC_x}, PC{PC_y} and PC{PC_z}')
 plt.show()
