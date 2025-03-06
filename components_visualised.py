@@ -1,48 +1,37 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# The principal directions of the considered components. 
+# Load data
+data = pd.read_excel("data/Concrete_Data.xls")
 
-data = pd.read_excel("data/Concrete_Data.xls") # Extracting data using panda
-data["Concrete compressive strength centered"] = data["Concrete compressive strength(MPa, megapascals) "]-data["Concrete compressive strength(MPa, megapascals) "].mean() # Centering the data
+# Centering the concrete compressive strength data
+data["Concrete compressive strength centered"] = (
+    data["Concrete compressive strength(MPa, megapascals) "]
+    - data["Concrete compressive strength(MPa, megapascals) "].mean()
+)
 
-# Plotting the components
-plt.scatter(data["Cement (component 1)(kg in a m^3 mixture)"], data["Concrete compressive strength centered"])
-plt.xlabel("Cement (component 1)(kg in a m^3 mixture)")
-plt.ylabel("Concrete compressive strength centered")
-plt.show()
+# Define figure and subplots (2 rows, 4 columns)
+fig, axes = plt.subplots(2, 4, figsize=(18, 8))
 
-plt.scatter(data["Blast Furnace Slag (component 2)(kg in a m^3 mixture)"], data["Concrete compressive strength centered"])
-plt.xlabel("Blast Furnace Slag (component 2)(kg in a m^3 mixture)")
-plt.ylabel("Concrete compressive strength centered")
-plt.show()
+# List of components and their corresponding labels
+components = [
+    ("Cement (component 1)(kg in a m^3 mixture)", "Cement"),
+    ("Blast Furnace Slag (component 2)(kg in a m^3 mixture)", "Blast Furnace Slag"),
+    ("Fly Ash (component 3)(kg in a m^3 mixture)", "Fly Ash"),
+    ("Water  (component 4)(kg in a m^3 mixture)", "Water"),
+    ("Superplasticizer (component 5)(kg in a m^3 mixture)", "Superplasticizer"),
+    ("Coarse Aggregate  (component 6)(kg in a m^3 mixture)", "Coarse Aggregate"),
+    ("Fine Aggregate (component 7)(kg in a m^3 mixture)", "Fine Aggregate"),
+    ("Age (day)", "Age"),
+]
 
-plt.scatter(data["Fly Ash (component 3)(kg in a m^3 mixture)"], data["Concrete compressive strength centered"])
-plt.xlabel("Fly Ash (component 3)(kg in a m^3 mixture)")
-plt.ylabel("Concrete compressive strength centered")
-plt.show()
+# Loop over components and plot in subplots
+for ax, (column, label) in zip(axes.flat, components):
+    ax.scatter(data[column], data["Concrete compressive strength centered"], alpha=0.5)
+    ax.set_xlabel(label)
+    ax.set_ylabel("Concrete compressive strength centered")
+    ax.set_title(f"{label} vs Strength")
 
-plt.scatter(data["Water  (component 4)(kg in a m^3 mixture)"], data["Concrete compressive strength centered"])
-plt.xlabel("Water  (component 4)(kg in a m^3 mixture)")
-plt.ylabel("Concrete compressive strength centered")
-plt.show()
-
-plt.scatter(data["Superplasticizer (component 5)(kg in a m^3 mixture)"], data["Concrete compressive strength centered"])
-plt.xlabel("Superplasticizer (component 5)(kg in a m^3 mixture)")
-plt.ylabel("Concrete compressive strength centered")
-plt.show()
-
-plt.scatter(data["Coarse Aggregate  (component 6)(kg in a m^3 mixture)"], data["Concrete compressive strength centered"])
-plt.xlabel("Coarse Aggregate  (component 6)(kg in a m^3 mixture)")
-plt.ylabel("Concrete compressive strength centered")
-plt.show()
-
-plt.scatter(data["Fine Aggregate (component 7)(kg in a m^3 mixture)"], data["Concrete compressive strength centered"])
-plt.xlabel("Fine Aggregate (component 7)(kg in a m^3 mixture)")
-plt.ylabel("Concrete compressive strength centered")
-plt.show()
-
-plt.scatter(data["Age (day)"], data["Concrete compressive strength centered"])
-plt.xlabel("Age (day)")
-plt.ylabel("Concrete compressive strength centered")
+# Adjust layout and show the plot
+plt.tight_layout()
 plt.show()
