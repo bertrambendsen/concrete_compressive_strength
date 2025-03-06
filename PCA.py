@@ -1,5 +1,5 @@
 # This code has been written using GitHub CoPilot for assisting in the completion of the project.
-# The code is part of Project 1 for the course Introduction to Machine Learning and Data Mining
+# The code is part of Project 1 for the course Introduction to Machine Learning and Data Mining.
 
 import pandas as pd
 import numpy as np
