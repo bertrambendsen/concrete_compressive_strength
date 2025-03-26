@@ -28,3 +28,5 @@ plt.yticks(rotation=0)
 
 plt.tight_layout()  # Adjust layout to prevent label cutoff
 plt.show()
+
+

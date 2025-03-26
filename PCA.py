@@ -15,6 +15,8 @@ compressive_strength = df.iloc[:, -1] # Loading last column as compressive stren
 scale = StandardScaler() 
 input_data = scale.fit_transform(input_data) # Centering and scaling the data
 
+print(compressive_strength)
+
 # Applying PCA to our data
 pca = PCA()
 input_pca = pca.fit_transform(input_data)
@@ -22,53 +24,53 @@ input_pca = pca.fit_transform(input_data)
 exvar = pca.explained_variance_ratio_
 
 # Writing to xls file
-# workbook = xlsxwriter.Workbook('data\Principal_componcents.xls')
-# worksheet = workbook.add_worksheet()
+workbook = xlsxwriter.Workbook('data\Principal_components.xls')
+worksheet = workbook.add_worksheet()
 
-# row = column = 0
-# for i in pca.components_:
-#     row = 0 
-#     worksheet.write(row, column,f'PC{column + 1}')
-#     for j in i:
-#         row += 1
-#         worksheet.write(row, column, j)
-#     column += 1
-# workbook.close()
+row = column = 0
+for i in pca.components_:
+    row = 0 
+    worksheet.write(row, column,f'PC{column + 1}')
+    for j in i:
+        row += 1
+        worksheet.write(row, column, j)
+    column += 1
+workbook.close()
 
-pc_df = pd.DataFrame(input_data, columns=[f'PC{i+1}' for i in range(input_pca.shape[1])])
-PC_data = pd.read_excel('Principal_componcents.xls')  # Corrected spelling
+correct_col_name = 'Concrete compressive strength(MPa, megapascals)'
 
-# Define intervals for Low, Medium, High
-Low = (2.33, 30.96)
-Medium = (30.96, 39.05)
-High = (39.05, 80.2)
+pc_df = pd.DataFrame(input_pca, columns=[f'PC{i+1}' for i in range(8)])
+pc_df[correct_col_name] = compressive_strength.values 
+##pc_df = pd.DataFrame(input_data, columns=[f'PC{i+1}' for i in range(input_pca.shape[1])])
+
+# Define intervals for Low, High
+Low = (2.33, 34.44) # 
+High = (34.44, 80.2) # 
 
 # Categorize compressive strength
 def categorize_strength(strength):
-    if strength <= Low[1]:
+    if strength < Low[1]:
         return 'Low'
-    elif strength <= Medium[1]:
-        return 'Medium'
     else:
         return 'High'
 
 pc_df['Strength Category'] = compressive_strength.apply(categorize_strength)
 
 # Define colors for categories
-palette = {'Low': 'red', 'Medium': 'orange', 'High': 'green'}
+palette = {'Low': 'red', 'High': 'green'}
 
 # Plot pairwise 2D projections with color-coding
-sns.set(style="whitegrid", font_scale=1.2)
 pairplot = sns.pairplot(
     pc_df,
-    vars=pc_df.columns[:-1],  # Exclude 'Strength Category' from axes
+    vars=[f'PC{i+1}' for i in range(8)],  # First 8 PCs
     hue='Strength Category',
     palette=palette,
-    plot_kws={'alpha': 0.7, 's': 30, 'edgecolor': 'k'},
-    diag_kind='kde'
+    plot_kws={'alpha': 0.7, 's': 20, 'edgecolor': 'k'},  # Smaller points (`s`)
+    diag_kind='kde',
+    height=2.0,  # Default is 2.5 (reducing makes it smaller)
+    aspect=0.8,  # Adjust width-to-height ratio (default 1)
 )
-
-pairplot.fig.suptitle("Pairwise 2D Projections of PCs (Colored by Strength)", y=1.02)
+pairplot.fig.suptitle("Pairwise 2D Projections of Principal Components", y=1.02)
 plt.tight_layout()
 plt.show()
 
@@ -77,7 +79,7 @@ for i, ax in enumerate(axes.flat):
     sns.scatterplot(
         data=pc_df,
         x=f'PC{i+1}',
-        y='Compressive Strength',
+        y=correct_col_name,
         hue='Strength Category',
         palette=palette,
         alpha=0.7,
@@ -132,23 +134,23 @@ plt.show()
 
 
 # """ 2D projection onto principal components"""
-# PC_x = 3
-# PC_y = 5
-# PC_z = 6
+PC_x = 3
+PC_y = 5
+PC_z = 6
 
-# X_2d = input_pca[:, :PC_y]  # Select the first x principal components
-# color_dimension = df["Concrete compressive strength(MPa, megapascals) "] # Use concrete strength for color coding
-# #color_dimension = input_pca[:, 2] # Use the third principal component for color coding
+X_2d = input_pca[:, :PC_y]  # Select the first x principal components
+color_dimension = df["Concrete compressive strength(MPa, megapascals) "] # Use concrete strength for color coding
+#color_dimension = input_pca[:, 2] # Use the third principal component for color coding
 
-# plt.scatter(X_2d[:, PC_x-1], X_2d[:, PC_y-1], c=color_dimension, cmap='coolwarm', alpha=0.7)
-# plt.xlabel(f'Principal Component {PC_x}')
-# plt.ylabel(f'Principal Component {PC_y}')
-# plt.title(f'2D Projection of Data onto PC{PC_x} and PC{PC_y}')
-# plt.show()
+plt.scatter(X_2d[:, PC_x-1], X_2d[:, PC_y-1], cmap='coolwarm', alpha=0.7)
+plt.xlabel(f'Principal Component {PC_x}')
+plt.ylabel(f'Principal Component {PC_y}')
+plt.title(f'2D Projection of Data onto PC{PC_x} and PC{PC_y}')
+plt.show()
 
-# """ 3D projection onto principal components """
-# # Project onto the first 3 components
-# X_3d = input_pca[:, :PC_z]
+""" 3D projection onto principal components """
+# Project onto the first 3 components
+X_3d = input_pca[:, :PC_z]
 
 # # Plot in 3D
 # fig = plt.figure()
