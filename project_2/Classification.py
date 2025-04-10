@@ -1,6 +1,10 @@
+# This code is part of the Introduction to Machine learning course project 2
+# It has been written using copilot to help with the implementation of the project
+
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, train_test_split
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
@@ -16,10 +20,10 @@ y = (y_contious > median_strength).astype(int)
 
 # Regulazation parameters
 lambd = np.linspace(0.01, 2, 6)  
-neuron = [2, 4, 8, 16, 32]
+neuron = [1, 2, 4, 8, 16, 32]
 
 maxiter = 100
-random = 42 # To make the same results as last
+random = 42 # Seeded to make the same results as last
 
 # Standardizing data
 scaler = StandardScaler()
@@ -122,3 +126,32 @@ print(results_df.to_string(index=False))
 print(f"Logistic Regression avg error: {results_df['LR_Error'].mean():.3f}")
 print(f"ANN avg error: {results_df['ANN_Error'].mean():.3f}")
 print(f"Baseline avg error: {results_df['Baseline_Error'].mean():.3f}")
+
+# Fixexes the feature names
+feature_names = df.columns[:-1].str.replace(r'\(.*\)', '', regex=True)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# Logistic regression, lambda = 0.806
+model = LogisticRegression(C=1/0.806, penalty='l2', solver='liblinear')
+model.fit(X_train, y_train)
+
+coeffs = model.coef_[0]
+
+df_coef = pd.DataFrame({
+    'Feature': feature_names,
+    'Coefficient': coeffs
+})
+
+# Sorting as absolute values
+df_coef = df_coef.reindex(df_coef.Coefficient.abs().sort_values(ascending=False).index)
+
+plt.figure(figsize=(10, 6))
+plt.barh(df_coef['Feature'], df_coef['Coefficient'], color=np.where(df_coef['Coefficient'] > 0, 'green', 'red'))
+plt.xlabel('Coefficient Value')
+plt.title('Feature Importance in Logistic Regression')
+plt.gca().invert_yaxis()
+plt.tight_layout()
+plt.show()
+
+print(f"{df_coef} \n intercept: {model.intercept_[0]}")

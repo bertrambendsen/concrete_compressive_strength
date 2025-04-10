@@ -1,3 +1,6 @@
+# This code is part of the Introduction to Machine learning course project 2
+# It has been written using copilot to help with the implementation of the project
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
